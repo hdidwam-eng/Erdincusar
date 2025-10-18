@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sayko Analiz</title>
+<style>
+body { font-family: Arial; padding: 20px; background: #f4f4f4; }
+h1 { color: #333; }
+.match { background: #fff; padding: 15px; margin: 10px 0; border-radius: 8px; }
+.banco { color: green; font-weight: bold; margin-top: 5px; }
+</style>
+</head>
+<body>
+<h1>Sayko Analiz - Bugünkü Maçlar</h1>
+<div id="matches"></div>
+
+<script>
+async function loadMatches() {
+  const res = await fetch("/matches");
+  const matches = await res.json();
+  const div = document.getElementById("matches");
+
+  for (let m of matches) {
+    const predRes = await fetch("/prediction");
+    const pred = await predRes.json();
+
+    const el = document.createElement("div");
+    el.classList.add("match");
+    el.innerHTML = `
+      <div><strong>${m.home} vs ${m.away}</strong></div>
+      <div>Lig: ${m.league} | Tarih: ${new Date(m.date).toLocaleString()}</div>
+      <div class="banco">
+        Banko Tahmin: MS=${pred.MS}, 2.5 Üst/Alt=${pred.Toplam_2_5}, KG=${pred.KG}
+      </div>
+    `;
+    div.appendChild(el);
+  }
+}
+
+loadMatches();
+</script>
+
+<p style="margin-top:20px;color:red;">
+Bu sitedeki analizler sadece tahmin amaçlıdır. Kazanç/kayıp sorumluluğu siteye ait değildir.
+</p>
+</body>
+</html>
